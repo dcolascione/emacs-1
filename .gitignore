@@ -200,6 +200,7 @@ src/temacs
 src/fingerprint.c
 src/dmpstruct.h
 src/*.pdmp
+src/test-bitset
 
 # Character-set info.
 admin/charsets/jisx2131-filter

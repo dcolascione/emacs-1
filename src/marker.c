@@ -23,6 +23,7 @@ along with GNU Emacs.  If not, see <https://www.gnu.org/licenses/>.  */
 #include "lisp.h"
 #include "character.h"
 #include "buffer.h"
+#include "alloc.h"
 
 /* Record one cached position found recently by
    buf_charpos_to_bytepos or buf_bytepos_to_charpos.  */
@@ -646,9 +647,9 @@ detach_marker (Lisp_Object marker)
    mark bits, including those in chain fields of markers.  */
 
 void
-unchain_marker (register struct Lisp_Marker *marker)
+unchain_marker (struct Lisp_Marker *const marker)
 {
-  register struct buffer *b = marker->buffer;
+  struct buffer *const b = marker->buffer;
 
   if (b)
     {
@@ -670,7 +671,7 @@ unchain_marker (register struct Lisp_Marker *marker)
 		   to the same buffer, or at least that they have the same
 		   base buffer.  */
 		if (tail->next && b->text != tail->next->buffer->text)
-		  emacs_abort ();
+		  emacs_unreachable ();
 	      }
 	    *prev = tail->next;
 	    /* We have removed the marker from the chain;
@@ -680,6 +681,7 @@ unchain_marker (register struct Lisp_Marker *marker)
 
       /* Error if marker was not in it's chain.  */
       eassert (tail != NULL);
+      marker->next = NULL;  /* Avoid dangling pointer.  */
     }
 }
 
@@ -812,6 +814,13 @@ verify_bytepos (ptrdiff_t charpos)
 
 #endif /* MARKER_DEBUG */
 
+
+void
+scan_marker_roots (const gc_phase phase)
+{
+  xscan_reference_pointer_to_vectorlike (&cached_buffer, phase);
+}
+
 void
 syms_of_marker (void)
 {
