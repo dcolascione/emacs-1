@@ -72,19 +72,19 @@ cc -fPIC -c -I. parser.c
 # Compile scanner.c.
 if test -f scanner.c
 then
-    cc -fPIC -c -I. scanner.c
+    cc -O3 -march=native -fPIC -c -I. scanner.c
 fi
 # Compile scanner.cc.
 if test -f scanner.cc
 then
-    c++ -fPIC -I. -c scanner.cc
+    c++ -O3 -march=native -fPIC -I. -c scanner.cc
 fi
 # Link.
 if test -f scanner.cc
 then
-    c++ -fPIC -shared *.o -o "libtree-sitter-${lang}.${soext}"
+    c++ -O3 -march=native -fPIC -shared *.o -o "libtree-sitter-${lang}.${soext}"
 else
-    cc -fPIC -shared *.o -o "libtree-sitter-${lang}.${soext}"
+    cc -O3 -march=native -fPIC -shared *.o -o "libtree-sitter-${lang}.${soext}"
 fi
 
 ### Copy out
